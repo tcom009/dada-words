@@ -1,8 +1,13 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import words from './data/words.json'
 
-function App() {
+const App= () => {
+  const arrayOfWords = JSON.stringify(words)
+  const { length } = arrayOfWords;
+  console.log(length);
+
   return (
     <div className="App">
       <header className="App-header">
