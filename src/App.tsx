@@ -1,31 +1,70 @@
-import React from 'react';
-import logo from './logo.svg';
+import { Button, Grid } from '@mui/material';
+import { useState, useEffect } from 'react';
 import './App.css';
-import words from './data/words.json'
+import words from './data/words';
+import getRandomNumber from './utils/getRandomNumber';
 
-const App= () => {
-  const arrayOfWords = JSON.stringify(words)
-  const { length } = arrayOfWords;
-  console.log(length);
+interface StateModel {
+  wordList: string[] | [];
+  selectedWords: string[] | [];
+}
+
+const initialState = {
+  wordList: [],
+  selectedWords: []
+};
+
+const App = () => {
+  const [state, setState] = useState<StateModel>(initialState);
+  const { wordList, selectedWords } = state;
+
+  useEffect(() => {
+    const refreshTime = 3000;
+    const selectedWords = () => {
+      const { length } = words;
+      const wordsListLenth = 10;
+      const randomWordList: string[] = [];
+      let cicleCounter = 0;
+      for (cicleCounter; cicleCounter < wordsListLenth; cicleCounter++) {
+        const randomPosition = getRandomNumber(length);
+        randomWordList.push(words[randomPosition]);
+      }
+      return randomWordList;
+    };
+    const getNewWords = () =>
+      setState((prevState) => ({
+        ...prevState,
+        wordList: selectedWords(),
+      }));
+    getNewWords();
+    const refreshInterval = setInterval(getNewWords, refreshTime);
+  }, []);
+
+  const addWord = (word : string) => {
+    const newList= [...selectedWords];
+    newList.push(word);
+    setState({...state, selectedWords: newList })
+  }
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Grid sx={{ m: 10 }} container>
+      <Grid xs={4} alignContent="center" item>
+        {wordList.map((word: string, index: number) => (
+          <div key={word}>
+          <Button onClick={() => addWord(word)}>
+            {word}
+          </Button>
+          </div>
+        ))}
+      </Grid>
+      <Grid xs={4} item>
+        Palabras Selecionadas:
+        {selectedWords.map((word: string, index: number) => (
+          <div key={word}>{word}</div>
+        ))}
+      </Grid>
+    </Grid>
   );
-}
+};
 
 export default App;
