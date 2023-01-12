@@ -1,7 +1,7 @@
 import { Button, Grid } from '@mui/material';
 import { useState, useEffect } from 'react';
 import './App.css';
-import words from './data/words';
+import jsonWords from './data/words.json';
 import getRandomNumber from './utils/getRandomNumber';
 
 interface StateModel {
@@ -9,19 +9,22 @@ interface StateModel {
   selectedWords: string[] | [];
 }
 
+
 const initialState = {
   wordList: [],
   selectedWords: []
 };
+
 
 const App = () => {
   const [state, setState] = useState<StateModel>(initialState);
   const { wordList, selectedWords } = state;
 
   useEffect(() => {
+    const words= jsonWords as string[];
     const refreshTime = 3000;
     const selectedWords = () => {
-      const { length } = words;
+      const { length }= words;
       const wordsListLenth = 10;
       const randomWordList: string[] = [];
       let cicleCounter = 0;
