@@ -1,72 +1,145 @@
 import { Button, Grid } from '@mui/material';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import jsonWords from './data/words.json';
 import getRandomNumber from './utils/getRandomNumber';
+import NavBar from './Navbar';
+import { nanoid } from 'nanoid';
 
-interface StateModel {
-  wordList: string[] | [];
-  selectedWords: string[] | [];
+type ButtonColors =
+  | 'primary'
+  | 'secondary'
+  | 'success'
+  | 'error'
+  | 'info'
+  | 'warning';
+
+type ButtonVariants = 'contained' | 'outlined' | 'text';
+
+type ButtonSizes = 'small' | 'medium' | 'large';
+
+const sizeList: ButtonSizes[] = ['small', 'medium', 'large'];
+
+interface RandomButtonProps {
+  word: string;
+  color: ButtonColors;
+  size: ButtonSizes;
+  variant: ButtonVariants;
 }
 
+interface StateModel {
+  randomWordList: RandomButtonProps[] | [];
+  userSelectedWords: string[] | [];
+}
 
 const initialState = {
-  wordList: [],
-  selectedWords: []
+  randomWordList: [],
+  userSelectedWords: [],
 };
 
+const colorList: ButtonColors[] = [
+  'primary',
+  'secondary',
+  'success',
+  'error',
+  'info',
+  'warning',
+];
+
+const variantList: ButtonVariants[] = ['contained', 'outlined', 'text'];
 
 const App = () => {
   const [state, setState] = useState<StateModel>(initialState);
-  const { wordList, selectedWords } = state;
+  const { randomWordList, userSelectedWords } = state;
+  const wordsListLenth = 10;
+  const words = jsonWords as string[];
+  const refreshTime = 5000;
 
-  useEffect(() => {
-    const words= jsonWords as string[];
-    const refreshTime = 3000;
-    const selectedWords = () => {
-      const { length }= words;
-      const wordsListLenth = 10;
-      const randomWordList: string[] = [];
-      let cicleCounter = 0;
-      for (cicleCounter; cicleCounter < wordsListLenth; cicleCounter++) {
-        const randomPosition = getRandomNumber(length);
-        randomWordList.push(words[randomPosition]);
-      }
-      return randomWordList;
-    };
-    const getNewWords = () =>
+  const getVariant = (): ButtonVariants => {
+    const { length } = variantList;
+    return variantList[getRandomNumber(length - 1)] as ButtonVariants;
+  };
+
+  const getColor = (): ButtonColors => {
+    const { length } = colorList;
+    return colorList[getRandomNumber(length - 1)];
+  };
+
+  const getSize = () => {
+    const { length } = sizeList;
+    return sizeList[getRandomNumber(length - 1)];
+  };
+
+  const selectedWords = useCallback(() => {
+    const { length } = words;
+    const randomWordList: RandomButtonProps[] = [];
+    let cicleCounter = 0;
+    for (cicleCounter; cicleCounter < wordsListLenth; cicleCounter++) {
+      const randomPosition = getRandomNumber(length);
+      randomWordList.push({
+        word: words[randomPosition],
+        color: getColor(),
+        variant: getVariant(),
+        size: getSize(),
+      });
+    }
+    return randomWordList;
+  }, [words]);
+  const getNewWords = useCallback(
+    () =>
       setState((prevState) => ({
         ...prevState,
-        wordList: selectedWords(),
-      }));
+        randomWordList: selectedWords(),
+      })),
+    [selectedWords]
+  );
+
+  useEffect(() => {
     getNewWords();
     const refreshInterval = setInterval(getNewWords, refreshTime);
-  }, []);
+    return () => clearInterval(refreshInterval);
+  }, [getNewWords]);
 
-  const addWord = (word : string) => {
-    const newList= [...selectedWords];
+  const addWord = (word: string, wordIndex: number) => {
+
+    const newList = [...userSelectedWords];
     newList.push(word);
-    setState({...state, selectedWords: newList })
-  }
+    const newRandomList = [...randomWordList];
+    newRandomList.splice(wordIndex, 1);
+    setState({
+      ...state,
+      userSelectedWords: newList,
+      randomWordList: newRandomList,
+    });
+  };
 
   return (
-    <Grid sx={{ m: 10 }} container>
-      <Grid xs={4} alignContent="center" item>
-        {wordList.map((word: string, index: number) => (
-          <div key={word}>
-          <Button onClick={() => addWord(word)}>
-            {word}
-          </Button>
-          </div>
-        ))}
+    <>
+      <NavBar />
+      <Grid sx={{ m: 10 }} container>
+        <Grid xs={4} alignContent="center" item>
+          {randomWordList.map((word: RandomButtonProps , index: number) => (
+            <div key={nanoid(5)}>
+              <Button
+                variant={word.variant}
+                color={word.color}
+                size={word.size}
+                sx={{ m: 1 }}
+                onClick={() => addWord(word.word, index)}
+              >
+                {word.word}
+              </Button>
+            </div>
+          ))}
+        </Grid>
+        <Grid xs={4} item>
+          Palabras Selecionadas:
+          {userSelectedWords.map((word: string, index: number) => (
+            <div key={word}>{word}</div>
+          ))}
+        </Grid>
       </Grid>
-      <Grid xs={4} item>
-        Palabras Selecionadas:
-        {selectedWords.map((word: string, index: number) => (
-          <div key={word}>{word}</div>
-        ))}
-      </Grid>
-    </Grid>
+    </>
   );
 };
 
