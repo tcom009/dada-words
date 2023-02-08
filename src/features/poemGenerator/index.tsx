@@ -1,10 +1,10 @@
 import { Button, Grid } from '@mui/material';
 import { useState, useEffect, useCallback } from 'react';
 import jsonWords from 'data/words.json';
+import DragList from './DragList';
 import jsonArticles from 'data/articles.json';
 import getRandomNumber from 'utils/getRandomNumber';
 import { nanoid } from 'nanoid';
-
 type ButtonColors =
   | 'primary'
   | 'secondary'
@@ -120,9 +120,8 @@ const CreatePoem = () => {
     <Grid sx={{ m: 10 }} container>
       <Grid xs={12} item>
         Palabras Selecionadas:
-        {userSelectedWords.map((word: string, index: number) => (
-          <div key={word}>{word}</div>
-        ))}
+        
+      <DragList wordsList={userSelectedWords} />
       </Grid>
       <Grid alignContent="center" direction="row" container>
         {randomWordList.map((word: RandomButtonProps, index: number) => (
