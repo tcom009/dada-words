@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Roboto+Mono:wght@700&family=Work+Sans:wght@800&display=swap');
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -10,4 +12,45 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.word-div {
+  background-color: inherit;
+}
+
+.word-div:hover {
+  background-color: #e7e7e7;
+}
+
+.home-img {
+  width: 100%;
+  opacity: 0.5;
+}
+
+.home-img-text {
+  position: absolute;
+  top: 15%;
+  left: 10%;
+  background-color: white;
+  font-family: 'Work Sans', sans-serif;
+}
+
+.home-link-one {
+  position: absolute;
+  top: 45%;
+  left: 5%;
+  background-color: green;
+  color: gold;
+  font-family: 'Roboto Mono', sans-serif !important;
+  border: none;
+}
+
+.home-link-two {
+  position: absolute;
+  top: 65%;
+  left: 60%;
+  background-color:darkcyan;
+  color: aliceblue;
+  border: none;
+  font-family: 'Merriweather', sans-serif !important;
 }
