@@ -9,7 +9,7 @@ interface StateModel {
 }
 
 const initialState = {
-  loading: true,
+  loading: false,
   data: null,
 };
 
@@ -17,14 +17,17 @@ const PoemList = () => {
   const [state, setState] = useState<StateModel>(initialState);
   const { data, loading } = state;
   const getData = useCallback(() => {
-    getPoems().then((response) => {
+    getPoems()
+    .then((response) => {
       const _data = simpleQueryReduce(response);
-      setState((prevState) => ({ ...prevState, data: _data, loading: false }));
-    });
+      setState({ data: _data, loading: false });
+    })
+    .catch((err) => console.log(err));
   }, []);
 
   useEffect(() => {
-    return () => getData();
+    setState((prevState) => ({ ...prevState, loading: true}))
+    getData();
   }, [getData]);
 
   if (loading) {
