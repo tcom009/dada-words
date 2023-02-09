@@ -23,6 +23,7 @@
       "@services":["services"],
       "@hooks":["hooks"],
       "@utils":["utils"],
+      "@assets":["assets"],
     }
 
   },

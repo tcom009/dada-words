@@ -1,20 +1,21 @@
-import { useState, useRef } from 'react';
+import { useRef } from 'react';
+import { Grid } from '@mui/material';
+import ClearIcon from '@mui/icons-material/Clear';
 
 interface Props {
   wordsList: string[];
+  setWordsList: Function;
+  onDeleteWord: Function;
 }
 
-const DragList = ({ wordsList }: Props) => {
-  const [words, setWords] = useState(wordsList);
-  // const [newWordItem, setNewWordItem] = useState("")
-
+const DragList = ({ wordsList, setWordsList, onDeleteWord }: Props) => {
   //save reference for dragItem and dragOverItem
   const dragItem = useRef<any>(null);
   const dragOverItem = useRef<any>(null);
 
   const handleSort = () => {
     //duplicate items
-    let _words = [...words];
+    let _words = [...wordsList];
 
     //remove and save the dragged item content
     const draggedItemContent = _words.splice(dragItem.current, 1)[0];
@@ -27,23 +28,47 @@ const DragList = ({ wordsList }: Props) => {
     dragOverItem.current = null;
 
     //update the actual array
-    setWords(_words);
+    setWordsList(_words);
   };
 
   return (
-    <div>
-      {words.map((item, index) => (
-        <div
-          key={index}
-          // className="list-item"
-          draggable
+    <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          height: '30vh',
+          width: '100%',
+          overflowY: 'scroll',
+          border:'1px solid gray',
+          borderRadius: '8px',
+        }}
+      >
+      {wordsList.map((item, index) => (
+        <Grid
+          xs
+          sx={{ mx: 1, alignContent: 'center', alignItems: 'center', display: 'flex'}}
+          key={`${item}${index}`}
           onDragStart={() => (dragItem.current = index)}
           onDragEnter={() => (dragOverItem.current = index)}
           onDragEnd={handleSort}
           onDragOver={(e) => e.preventDefault()}
+          className="word-div"
+          alignItems="center"
+          draggable
+          item
         >
-          <h3>{item}</h3>
-        </div>
+          <h3 style={{ display: 'flex'}}>
+            {' '}
+            {item}
+            <button
+              type="button"
+              onClick={() => onDeleteWord(index)}
+              style={{ border: 'none', backgroundColor: 'inherit' }}
+            >
+              <ClearIcon sx={{ fontSize: '15px', ml: 3 }} />{' '}
+            </button>
+          </h3>
+        </Grid>
       ))}
     </div>
   );
